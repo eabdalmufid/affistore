@@ -14,16 +14,7 @@ function toSlug(title) {
   return title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
-const getSmmImage = (category) => {
-  const c = category.toLowerCase();
-  if (c.includes('instagram')) return 'https://cdn-icons-png.flaticon.com/512/174/174855.png';
-  if (c.includes('tiktok')) return 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png';
-  if (c.includes('youtube')) return 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png';
-  if (c.includes('facebook')) return 'https://cdn-icons-png.flaticon.com/512/124/124010.png';
-  if (c.includes('twitter') || c.includes('x')) return 'https://cdn-icons-png.flaticon.com/512/733/733579.png';
-  if (c.includes('telegram')) return 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png';
-  return 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png';
-};
+
 
 function getProductFromUrl() {
   const hash = window.location.hash.slice(1);
@@ -109,7 +100,9 @@ function ProductModal({ product, onClose, smmData = [] }) {
         <div className="modal-header">
           <div className="modal-product-info">
             {product.type === 'smm_category' ? (
-              <div className="modal-smm-icon">🚀</div>
+              <div className="modal-smm-icon">
+                <img src="/logo.png" alt="SMM" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
+              </div>
             ) : (
               <ProductImage src={product.image} title={product.title} category={product.category} className="modal-product-img" />
             )}
@@ -229,12 +222,12 @@ function FloatingWA() {
 
 /* ── Product image with fallback ── */
 const CATEGORY_COLORS = {
-  Streaming: 'linear-gradient(135deg,#1e3a5f,#0d2137)',
-  Creative:  'linear-gradient(135deg,#2d1b69,#1e1040)',
-  AI:        'linear-gradient(135deg,#064e3b,#022c22)',
-  Music:     'linear-gradient(135deg,#1a3300,#0f2000)',
-  Utility:   'linear-gradient(135deg,#1c1917,#0c0a09)',
-  SMM:       'linear-gradient(135deg,#4c1d95,#2e1065)',
+  Streaming: 'linear-gradient(135deg,#9333ea,#06b6d4)',
+  Creative:  'linear-gradient(135deg,#7c3aed,#2563eb)',
+  AI:        'linear-gradient(135deg,#06b6d4,#0891b2)',
+  Music:     'linear-gradient(135deg,#9333ea,#7c3aed)',
+  Utility:   'linear-gradient(135deg,#1e293b,#0f172a)',
+  SMM:       'linear-gradient(135deg,#9333ea,#06b6d4)',
 };
 
 function ProductImage({ src, title, category, className }) {
@@ -278,8 +271,11 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar" style={scrolled ? { background: 'rgba(15,12,26,0.97)' } : {}}>
-      <div className="navbar-logo">🛍️ Affi Store</div>
+    <nav className="navbar" style={scrolled ? { background: 'rgba(6,4,17,0.97)' } : {}}>
+      <div className="navbar-logo">
+        <img src="/logo.png" alt="Logo" className="navbar-logo-img" />
+        <span className="navbar-logo-text">Affi Store</span>
+      </div>
       <ul className={`navbar-nav${menuOpen ? ' open' : ''}`}>
         <li><a href="#hero"       onClick={() => scrollTo('hero')}>Beranda</a></li>
         <li><a href="#products"   onClick={() => scrollTo('products')}>Produk</a></li>
@@ -386,7 +382,6 @@ function Products({ viewMode, smmData, onSelectProduct }) {
     : Array.from(new Set(smmData.map(item => item.category))).map((cat, idx) => ({
         id: `smm-${idx}`,
         title: cat,
-        image: getSmmImage(cat),
         category: "SMM",
         type: 'smm_category'
       }));
@@ -461,7 +456,9 @@ function Products({ viewMode, smmData, onSelectProduct }) {
                 </div>
               ) : (
                 <div className="smm-icon-wrapper">
-                   <div className="smm-category-icon">🚀</div>
+                 <div className="smm-category-icon">
+                   <img src="/logo.png" alt="SMM" style={{ width: '70px', height: '70px', objectFit: 'contain' }} />
+                 </div>
                 </div>
               )}
               <div className="product-info">
@@ -568,7 +565,10 @@ function Footer() {
     <footer>
       <div className="footer-grid">
         <div className="footer-brand">
-          <span className="footer-logo">🛍️ Affi Store</span>
+          <div className="navbar-logo" style={{ marginBottom: '1.5rem' }}>
+            <img src="/logo.png" alt="Logo" className="navbar-logo-img" />
+            <span className="navbar-logo-text">Affi Store</span>
+          </div>
           <p>Partner terpercaya untuk solusi digital premium dan pertumbuhan media sosial. Kami menghadirkan kualitas, kecepatan, dan keamanan dalam satu platform.</p>
         </div>
         <div className="footer-col">
