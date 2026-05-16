@@ -3,6 +3,8 @@ import './App.css';
 import { products, categories } from './data/products';
 
 const API_URL = 'https://bot.affidev.com/app/plans';
+const SMM_API_URL = 'https://bot.affidev.com/smm/plans';
+
 
 function formatRupiah(amount) {
   return 'Rp ' + Math.round(amount).toLocaleString('id-ID');
@@ -11,6 +13,17 @@ function formatRupiah(amount) {
 function toSlug(title) {
   return title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
+
+const getSmmImage = (category) => {
+  const c = category.toLowerCase();
+  if (c.includes('instagram')) return 'https://cdn-icons-png.flaticon.com/512/174/174855.png';
+  if (c.includes('tiktok')) return 'https://cdn-icons-png.flaticon.com/512/3046/3046121.png';
+  if (c.includes('youtube')) return 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png';
+  if (c.includes('facebook')) return 'https://cdn-icons-png.flaticon.com/512/124/124010.png';
+  if (c.includes('twitter') || c.includes('x')) return 'https://cdn-icons-png.flaticon.com/512/733/733579.png';
+  if (c.includes('telegram')) return 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png';
+  return 'https://cdn-icons-png.flaticon.com/512/1144/1144760.png';
+};
 
 function getProductFromUrl() {
   const hash = window.location.hash.slice(1);
@@ -21,12 +34,35 @@ function getProductFromUrl() {
 }
 
 /* ── Product Modal ── */
-function ProductModal({ product, onClose }) {
+function ProductModal({ product, onClose, smmData = [] }) {
   const [plans, setPlans]       = useState([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(null);
 
   const fetchPlans = useCallback(async () => {
+    // For SMM categories, use pre-fetched data
+    if (product.type === 'smm_category') {
+      setLoading(true);
+      try {
+        const filtered = smmData.filter(item => item.category === product.title);
+        const mapped = filtered.map(item => ({
+          code: item.service,
+          name: item.name,
+          price: parseFloat(item.rate),
+          min: item.min,
+          max: item.max,
+          status: 'available'
+        }));
+        setPlans(mapped);
+      } catch (e) {
+        setError('Gagal memproses data SMM.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // For regular apps, fetch from API
     setLoading(true);
     setError(null);
     try {
@@ -35,8 +71,10 @@ function ProductModal({ product, onClose }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filter_game: product.title }),
       });
+
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
+
       if (!json.result) throw new Error(json.message || 'Gagal memuat data');
       setPlans(json.data || []);
     } catch (e) {
@@ -44,7 +82,7 @@ function ProductModal({ product, onClose }) {
     } finally {
       setLoading(false);
     }
-  }, [product.title]);
+  }, [product.title, product.type, smmData]);
 
   useEffect(() => {
     fetchPlans();
@@ -70,7 +108,11 @@ function ProductModal({ product, onClose }) {
         {/* Header */}
         <div className="modal-header">
           <div className="modal-product-info">
-            <ProductImage src={product.image} title={product.title} category={product.category} className="modal-product-img" />
+            {product.type === 'smm_category' ? (
+              <div className="modal-smm-icon">🚀</div>
+            ) : (
+              <ProductImage src={product.image} title={product.title} category={product.category} className="modal-product-img" />
+            )}
             <div>
               <div className="modal-product-category">{product.category}</div>
               <div className="modal-product-title">{product.title}</div>
@@ -110,7 +152,15 @@ function ProductModal({ product, onClose }) {
                   <div key={plan.code} className={`plan-item${isEmpty ? ' plan-empty' : ''}`}>
                     <div className="plan-left">
                       <div className="plan-name">{plan.name}</div>
-                      <div className="plan-price">{formatRupiah(price)}</div>
+                      <div className="plan-price">
+                        {formatRupiah(price)}
+                        {product.type === 'smm_category' && <span className="price-unit">/1000 Order</span>}
+                      </div>
+                      {(plan.min || plan.max) && (
+                        <div className="plan-limits">
+                          Min. Order: {plan.min?.toLocaleString('id-ID')} | Max. Order: {plan.max?.toLocaleString('id-ID')}
+                        </div>
+                      )}
                     </div>
                     <div className="plan-right">
                       {isEmpty ? (
@@ -118,7 +168,21 @@ function ProductModal({ product, onClose }) {
                       ) : (
                         <a
                           className="plan-order-btn"
-                          href={waLink(`Halo, saya ingin order *${product.title}* — ${plan.name} seharga ${formatRupiah(price)}`)}
+                          href={waLink(
+                            product.type === 'smm_category'
+                              ? `Halo Affi Store, saya ingin order SMM:\n\n` +
+                                `📦 Produk: *${product.title}*\n` +
+                                `🛠️ Layanan: ${plan.name}\n` +
+                                `💰 Harga: ${formatRupiah(price)}/1000 Order\n` +
+                                `📉 Min. Order: ${plan.min?.toLocaleString('id-ID')}\n` +
+                                `📈 Max. Order: ${plan.max?.toLocaleString('id-ID')}\n\n` +
+                                `Mohon segera diproses, terima kasih!`
+                              : `Halo Affi Store, saya ingin order Premium:\n\n` +
+                                `📦 Produk: *${product.title}*\n` +
+                                `✨ Varian: ${plan.name}\n` +
+                                `💰 Harga: ${formatRupiah(price)}\n\n` +
+                                `Mohon segera diproses, terima kasih!`
+                          )}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -170,9 +234,11 @@ const CATEGORY_COLORS = {
   AI:        'linear-gradient(135deg,#064e3b,#022c22)',
   Music:     'linear-gradient(135deg,#1a3300,#0f2000)',
   Utility:   'linear-gradient(135deg,#1c1917,#0c0a09)',
+  SMM:       'linear-gradient(135deg,#4c1d95,#2e1065)',
 };
 
 function ProductImage({ src, title, category, className }) {
+  if (category === 'SMM') return null; // No image for SMM
   const [failed, setFailed] = useState(false);
   const initial = title ? title.charAt(0).toUpperCase() : '?';
   const bg = CATEGORY_COLORS[category] || 'linear-gradient(135deg,#1e1b4b,#1e3a5f)';
@@ -213,14 +279,14 @@ function Navbar() {
 
   return (
     <nav className="navbar" style={scrolled ? { background: 'rgba(15,12,26,0.97)' } : {}}>
-      <div className="navbar-logo">🛍️ AppStore Premium</div>
+      <div className="navbar-logo">🛍️ Affi Store</div>
       <ul className={`navbar-nav${menuOpen ? ' open' : ''}`}>
         <li><a href="#hero"       onClick={() => scrollTo('hero')}>Beranda</a></li>
         <li><a href="#products"   onClick={() => scrollTo('products')}>Produk</a></li>
         <li><a href="#about"      onClick={() => scrollTo('about')}>Tentang</a></li>
         <li><a href="#contact"    onClick={() => scrollTo('contact')}>Kontak</a></li>
         <li>
-          <a className="navbar-cta" href={waLink('Halo, saya ingin order produk premium!')} target="_blank" rel="noreferrer">
+          <a className="navbar-cta" href={waLink('Halo, saya ingin order produk Affistore!')} target="_blank" rel="noreferrer">
             Order Sekarang
           </a>
         </li>
@@ -242,26 +308,26 @@ function Hero() {
       <div className="hero-orb hero-orb-3" />
       <div className="hero-content">
         <div className="hero-text">
-          <div className="section-badge">✨ Terpercaya & Bergaransi</div>
-          <h1>Dapatkan Akun Premium{'\n'}Harga Terjangkau</h1>
+          <div className="section-badge">✨ Solusi Digital Terintegrasi</div>
+          <h1>Upgrade Gaya Hidup Digital Anda</h1>
           <p>
-            Nikmati ribuan konten hiburan dan aplikasi premium tanpa batas
-            dengan harga yang sangat terjangkau. Garansi aktif &amp; terpercaya!
+            Dapatkan akses premium ke berbagai aplikasi favorit dan tingkatkan 
+            kehadiran media sosial Anda dengan layanan SMM terbaik. Cepat, aman, dan bergaransi.
           </p>
           <div className="hero-buttons">
             <button className="btn-primary" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}>
-              🎯 Lihat Produk
+              🎯 Explore Layanan
             </button>
-            <a className="btn-secondary" href={waLink('Halo, saya ingin bertanya tentang produk premium!')} target="_blank" rel="noreferrer">
-              💬 Hubungi Kami
+            <a className="btn-secondary" href={waLink('Halo, saya ingin berkonsultasi tentang layanan digital!')} target="_blank" rel="noreferrer">
+              💬 Konsultasi Gratis
             </a>
           </div>
         </div>
         <div className="hero-stats">
           {[
-            { icon: '👥', num: '500+', label: 'Pelanggan Puas' },
-            { icon: '📦', num: '19+', label: 'Produk Premium' },
-            { icon: '🕐', num: '24/7', label: 'Support Aktif' },
+            { icon: '🌟', num: '1.000+', label: 'Total Pesanan' },
+            { icon: '🚀', num: '100+', label: 'Layanan Aktif' },
+            { icon: '🛡️', num: '24/7', label: 'Support System' },
           ].map(s => (
             <div key={s.label} className="stat-card">
               <span className="stat-icon">{s.icon}</span>
@@ -279,10 +345,10 @@ function Hero() {
 
 /* ── Features ── */
 const FEATURES = [
-  { icon: '✅', title: 'Garansi Aktif', desc: 'Setiap produk dijamin aktif. Jika ada masalah, kami siap ganti rugi segera.' },
-  { icon: '⚡', title: 'Proses Cepat', desc: 'Pengiriman akun dalam hitungan menit setelah pembayaran dikonfirmasi.' },
-  { icon: '💰', title: 'Harga Terjangkau', desc: 'Harga terbaik di pasaran dengan kualitas premium yang tidak mengecewakan.' },
-  { icon: '🔒', title: 'Aman & Terpercaya', desc: 'Ribuan pelanggan puas membuktikan keamanan dan kepercayaan layanan kami.' },
+  { icon: '🔐', title: 'Aman & Privat', desc: 'Keamanan data Anda adalah prioritas utama kami dengan sistem enkripsi terbaru.' },
+  { icon: '⚡', title: 'Instan Delivery', desc: 'Proses otomatis yang memastikan layanan Anda aktif dalam hitungan menit.' },
+  { icon: '💎', title: 'Kualitas Premium', desc: 'Hanya menyediakan layanan dengan kualitas terbaik dan minim risiko drop.' },
+  { icon: '🤝', title: 'Support Responsif', desc: 'Tim bantuan kami siap melayani Anda kapanpun jika terjadi kendala teknis.' },
 ];
 
 function Features() {
@@ -311,43 +377,27 @@ function Features() {
 }
 
 /* ── Products ── */
-function Products() {
+function Products({ viewMode, smmData, onSelectProduct }) {
   const [activeCategory, setActiveCategory] = useState('Semua');
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Auto-open modal from URL hash (e.g. #capcut-pro) or path (e.g. /capcut-pro)
-  useEffect(() => {
-    const product = getProductFromUrl();
-    if (product) {
-      setSelectedProduct(product);
-      setTimeout(() => {
-        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  }, []);
+  const displayProducts = viewMode === 'apps' 
+    ? products 
+    : Array.from(new Set(smmData.map(item => item.category))).map((cat, idx) => ({
+        id: `smm-${idx}`,
+        title: cat,
+        image: getSmmImage(cat),
+        category: "SMM",
+        type: 'smm_category'
+      }));
 
-  // React to hash changes while page is open
-  useEffect(() => {
-    const handleHashChange = () => {
-      const product = getProductFromUrl();
-      if (product) setSelectedProduct(product);
-    };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  const displayCategories = viewMode === 'apps' 
+    ? categories 
+    : ['Semua', ...Array.from(new Set(displayProducts.map(p => p.title.split(' ')[0])))];
 
-  const handleCloseModal = () => {
-    setSelectedProduct(null);
-    // Remove product slug from hash when closing
-    const slug = window.location.hash.slice(1);
-    if (slug && products.some(p => toSlug(p.title) === slug)) {
-      window.history.pushState('', document.title, window.location.pathname + window.location.search);
-    }
-  };
-
-  const filtered = products.filter(p => {
-    const matchCategory = activeCategory === 'Semua' || p.category === activeCategory;
+  const filtered = displayProducts.filter(p => {
+    const matchCategory = activeCategory === 'Semua' || 
+                         (viewMode === 'apps' ? p.category === activeCategory : p.title.includes(activeCategory));
     const matchSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCategory && matchSearch;
   });
@@ -356,9 +406,13 @@ function Products() {
     <section id="products" className="section-full products-bg">
       <div className="section" style={{ paddingTop: 0, paddingBottom: 0 }}>
         <div className="section-title">
-          <div className="section-badge">🏆 Koleksi Kami</div>
-          <h2>Produk Premium Kami</h2>
-          <p>Pilih dari berbagai aplikasi dan layanan streaming premium favoritmu dengan harga terbaik.</p>
+          <div className="section-badge">🏆 Koleksi {viewMode === 'apps' ? 'Aplikasi' : 'SMM'}</div>
+          <h2>{viewMode === 'apps' ? 'Produk Premium Kami' : 'Layanan SMM Terbaik'}</h2>
+          <p>
+            {viewMode === 'apps' 
+              ? 'Pilih dari berbagai aplikasi dan layanan streaming premium favoritmu.' 
+              : 'Tingkatkan jangkauan media sosialmu dengan layanan SMM terpercaya.'}
+          </p>
         </div>
 
         <div className="search-container">
@@ -366,18 +420,17 @@ function Products() {
           <input
             type="text"
             className="search-input"
-            placeholder="Cari produk..."
+            placeholder={`Cari ${viewMode === 'apps' ? 'produk' : 'layanan'}...`}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            aria-label="Cari produk"
           />
           {searchQuery && (
-            <button className="search-clear" onClick={() => setSearchQuery('')} aria-label="Hapus pencarian">✕</button>
+            <button className="search-clear" onClick={() => setSearchQuery('')}>✕</button>
           )}
         </div>
 
         <div className="category-filter">
-          {categories.map(cat => (
+          {displayCategories.map(cat => (
             <button
               key={cat}
               className={`category-btn${activeCategory === cat ? ' active' : ''}`}
@@ -392,34 +445,36 @@ function Products() {
           {filtered.length === 0 && (
             <div className="products-empty">
               <span>😕</span>
-              <p>Produk tidak ditemukan</p>
+              <p>Layanan tidak ditemukan</p>
             </div>
           )}
           {filtered.map(product => (
-            <div key={product.id} className="product-card" onClick={() => setSelectedProduct(product)}>
-              <div className="product-img-wrapper">
-                <ProductImage src={product.image} title={product.title} category={product.category} />
-                {product.badge && (
-                  <span className={`product-badge badge-${product.badge.toLowerCase()}`}>
-                    {product.badge}
-                  </span>
-                )}
-              </div>
+            <div key={product.id} className={`product-card ${product.type === 'smm_category' ? 'smm-card' : ''}`} onClick={() => onSelectProduct(product)}>
+              {product.type !== 'smm_category' ? (
+                <div className="product-img-wrapper">
+                  <ProductImage src={product.image} title={product.title} category={product.category} />
+                  {product.badge && (
+                    <span className={`product-badge badge-${product.badge.toLowerCase()}`}>
+                      {product.badge}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="smm-icon-wrapper">
+                   <div className="smm-category-icon">🚀</div>
+                </div>
+              )}
               <div className="product-info">
                 <div className="product-category">{product.category}</div>
                 <div className="product-title">{product.title}</div>
                 <button className="product-order-btn">
-                  🏷️ Harga
+                   Lihat Paket
                 </button>
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      {selectedProduct && (
-        <ProductModal product={selectedProduct} onClose={handleCloseModal} />
-      )}
     </section>
   );
 }
@@ -488,8 +543,8 @@ function CTABanner() {
   return (
     <div className="cta-banner">
       <div className="cta-banner-content">
-        <h2>Siap Upgrade ke Premium? 🚀</h2>
-        <p>Hubungi kami sekarang dan dapatkan akun premium impianmu dengan harga terjangkau!</p>
+        <h2>Siap Meningkatkan Performa Digital Anda? 🚀</h2>
+        <p>Hubungi tim kami untuk konsultasi layanan terbaik yang sesuai dengan kebutuhan bisnis atau personal Anda.</p>
         <a
           className="btn-primary"
           href={waLink('Halo, saya ingin tanya produk premium!')}
@@ -513,8 +568,8 @@ function Footer() {
     <footer>
       <div className="footer-grid">
         <div className="footer-brand">
-          <span className="footer-logo">🛍️ AppStore Premium</span>
-          <p>Solusi terpercaya untuk mendapatkan akun premium berbagai aplikasi dan layanan streaming dengan harga terjangkau dan bergaransi.</p>
+          <span className="footer-logo">🛍️ Affi Store</span>
+          <p>Partner terpercaya untuk solusi digital premium dan pertumbuhan media sosial. Kami menghadirkan kualitas, kecepatan, dan keamanan dalam satu platform.</p>
         </div>
         <div className="footer-col">
           <h4>Tautan Cepat</h4>
@@ -539,7 +594,7 @@ function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© {year} AppStore Premium. Semua hak dilindungi.</p>
+        <p>© {year} Affi Store. Semua hak dilindungi.</p>
         <div className="footer-bottom-links">
           <a href="#">Kebijakan Privasi</a>
           <a href="#">Syarat & Ketentuan</a>
@@ -552,6 +607,9 @@ function Footer() {
 /* ── App Root ── */
 export default function App() {
   const [showTop, setShowTop] = useState(false);
+  const [viewMode, setViewMode] = useState('apps'); // 'apps' | 'smm'
+  const [smmData, setSmmData] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 400);
@@ -559,18 +617,109 @@ export default function App() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
+  const fetchSmm = useCallback(async () => {
+    try {
+      const res = await fetch(SMM_API_URL, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) setSmmData(data);
+      }
+    } catch (e) {
+      console.error('Failed to fetch SMM data', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSmm();
+  }, [fetchSmm]);
+
+  // Auto-open modal from URL
+  useEffect(() => {
+    const product = getProductFromUrl();
+    if (product) {
+      setSelectedProduct(product);
+      setTimeout(() => {
+        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, []);
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+    const slug = window.location.hash.slice(1);
+    if (slug && products.some(p => toSlug(p.title) === slug)) {
+      window.history.pushState('', document.title, window.location.pathname + window.location.search);
+    }
+  };
+
   return (
     <>
       <Navbar />
       <main>
         <Hero />
+        
+        {/* Service Switcher */}
+        <section className="service-selector-section">
+          <div className="service-switcher">
+            <div 
+              className={`switcher-card${viewMode === 'apps' ? ' active' : ''}`}
+              onClick={() => setViewMode('apps')}
+            >
+              <div className="switcher-status">{viewMode === 'apps' ? '✅ Terpilih' : 'Pilih'}</div>
+              <div className="switcher-icon">📱</div>
+              <div>
+                <h3>Akun Premium</h3>
+                <p>Streaming, AI & Aplikasi</p>
+              </div>
+            </div>
+            <div 
+              className={`switcher-card${viewMode === 'smm' ? ' active' : ''}`}
+              onClick={() => setViewMode('smm')}
+              style={{ position: 'relative' }}
+            >
+              <div className="switcher-status">{viewMode === 'smm' ? '✅ Terpilih' : 'Pilih'}</div>
+              {viewMode === 'smm' && (
+                <button 
+                  className="refresh-btn" 
+                  onClick={(e) => { e.stopPropagation(); fetchSmm(); }}
+                  title="Refresh Data"
+                >
+                  🔄
+                </button>
+              )}
+              <div className="switcher-icon">🚀</div>
+              <div>
+                <h3>Layanan SMM</h3>
+                <p>Followers, Likes & Views</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <Features />
-        <Products />
+        <Products 
+          viewMode={viewMode} 
+          smmData={smmData} 
+          onSelectProduct={setSelectedProduct} 
+        />
         <Testimonials />
         <CTABanner />
       </main>
       <Footer />
       <FloatingWA />
+      
+      {selectedProduct && (
+        <ProductModal 
+          product={selectedProduct} 
+          onClose={handleCloseModal} 
+          smmData={smmData}
+        />
+      )}
+
       {showTop && (
         <button
           className="back-to-top"
