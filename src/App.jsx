@@ -163,14 +163,14 @@ function ProductModal({ product, onClose, smmData = [] }) {
                           className="plan-order-btn"
                           href={waLink(
                             product.type === 'smm_category'
-                              ? `Halo Affi Store, saya ingin order SMM:\n\n` +
+                              ? `Halo Affistore, saya ingin order SMM:\n\n` +
                                 `📦 Produk: *${product.title}*\n` +
                                 `🛠️ Layanan: ${plan.name}\n` +
                                 `💰 Harga: ${formatRupiah(price)}/1000 Order\n` +
                                 `📉 Min. Order: ${plan.min?.toLocaleString('id-ID')}\n` +
                                 `📈 Max. Order: ${plan.max?.toLocaleString('id-ID')}\n\n` +
                                 `Mohon segera diproses, terima kasih!`
-                              : `Halo Affi Store, saya ingin order Premium:\n\n` +
+                              : `Halo Affistore, saya ingin order Premium:\n\n` +
                                 `📦 Produk: *${product.title}*\n` +
                                 `✨ Varian: ${plan.name}\n` +
                                 `💰 Harga: ${formatRupiah(price)}\n\n` +
@@ -274,7 +274,7 @@ function Navbar() {
     <nav className="navbar" style={scrolled ? { background: 'rgba(6,4,17,0.97)' } : {}}>
       <div className="navbar-logo">
         <img src="/logo.png" alt="Logo" className="navbar-logo-img" />
-        <span className="navbar-logo-text">Affi Store</span>
+        <span className="navbar-logo-text">Affistore</span>
       </div>
       <ul className={`navbar-nav${menuOpen ? ' open' : ''}`}>
         <li><a href="#hero"       onClick={() => scrollTo('hero')}>Beranda</a></li>
@@ -567,7 +567,7 @@ function Footer() {
         <div className="footer-brand">
           <div className="navbar-logo" style={{ marginBottom: '1.5rem' }}>
             <img src="/logo.png" alt="Logo" className="navbar-logo-img" />
-            <span className="navbar-logo-text">Affi Store</span>
+            <span className="navbar-logo-text">Affistore</span>
           </div>
           <p>Partner terpercaya untuk solusi digital premium dan pertumbuhan media sosial. Kami menghadirkan kualitas, kecepatan, dan keamanan dalam satu platform.</p>
         </div>
@@ -594,7 +594,7 @@ function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© {year} Affi Store. Semua hak dilindungi.</p>
+        <p>© {year} Affistore. Semua hak dilindungi.</p>
         <div className="footer-bottom-links">
           <a href="#">Kebijakan Privasi</a>
           <a href="#">Syarat & Ketentuan</a>
