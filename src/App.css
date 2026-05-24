@@ -1507,6 +1507,22 @@ footer {
 
 /* ===== RESPONSIVE — 600px ===== */
 @media (max-width: 600px) {
+  .service-tabs {
+    max-width: 100%;
+  }
+
+  .service-tab {
+    min-height: 44px;
+    padding: 0.65rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .service-tab-refresh-inline {
+    display: none;
+  }
+
   /* Products — 2 cols */
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
