@@ -211,6 +211,25 @@ function FloatingWA() {
   );
 }
 
+function ServiceChoicePopup({ onChoose }) {
+  return (
+    <div className="service-choice-overlay">
+      <div className="service-choice-popup" role="dialog" aria-modal="true" aria-labelledby="service-choice-title">
+        <h2 id="service-choice-title">Pilih Layanan</h2>
+        <p>Mau lihat produk apa dulu?</p>
+        <div className="service-choice-actions">
+          <button className="service-choice-btn" onClick={() => onChoose('apps')}>
+            📱 Akun Premium
+          </button>
+          <button className="service-choice-btn service-choice-btn-smm" onClick={() => onChoose('smm')}>
+            🚀 Layanan SMM
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 
 /* ── Product image with fallback ── */
@@ -596,6 +615,13 @@ export default function App() {
   const [viewMode, setViewMode] = useState('apps');
   const [smmData, setSmmData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showServiceChoice, setShowServiceChoice] = useState(() => {
+    try {
+      return !window.localStorage.getItem('affistore-service-choice');
+    } catch {
+      return true;
+    }
+  });
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 400);
@@ -641,6 +667,20 @@ export default function App() {
     }
   };
 
+  const handleServiceChoice = (mode) => {
+    setViewMode(mode);
+    if (mode === 'smm') fetchSmm();
+    setShowServiceChoice(false);
+    try {
+      window.localStorage.setItem('affistore-service-choice', mode);
+    } catch {
+      // no-op for environments without localStorage access
+    }
+    setTimeout(() => {
+      document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <>
       <Navbar />
@@ -658,21 +698,23 @@ export default function App() {
                 📱 Akun Premium
               </button>
               <button
-                className={`service-tab${viewMode === 'smm' ? ' active' : ''}`}
+                className={`service-tab service-tab-smm${viewMode === 'smm' ? ' active' : ''}`}
                 onClick={() => setViewMode('smm')}
               >
-                🚀 Layanan SMM
-              </button>
-              {viewMode === 'smm' && (
-                <button
-                  className="service-tab-refresh"
-                  onClick={fetchSmm}
+                <span>🚀 Layanan SMM</span>
+                <span
+                  className="service-tab-refresh-inline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setViewMode('smm');
+                    fetchSmm();
+                  }}
                   title="Refresh Data"
                   aria-label="Refresh data SMM"
                 >
                   ↻
-                </button>
-              )}
+                </span>
+              </button>
             </div>
           </div>
         </div>
@@ -688,6 +730,10 @@ export default function App() {
       </main>
       <Footer />
       <FloatingWA />
+
+      {showServiceChoice && (
+        <ServiceChoicePopup onChoose={handleServiceChoice} />
+      )}
       
       {selectedProduct && (
         <ProductModal 
