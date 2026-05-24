@@ -336,6 +336,13 @@ a {
   font-family: inherit;
 }
 
+.service-tab-smm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
 .service-tab:hover {
   color: #ccc;
   background: rgba(255, 255, 255, 0.04);
@@ -346,28 +353,92 @@ a {
   color: #fff;
 }
 
-.service-tab-refresh {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #666;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
+.service-tab-refresh-inline {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
   transition: all 0.2s;
-  flex-shrink: 0;
-  font-family: inherit;
 }
 
-.service-tab-refresh:hover {
-  background: rgba(124, 58, 237, 0.15);
-  border-color: #7c3aed;
-  color: #a78bfa;
+.service-tab-refresh-inline:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
   transform: rotate(180deg);
+}
+
+/* ===== SERVICE CHOICE POPUP ===== */
+.service-choice-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 1200;
+}
+
+.service-choice-popup {
+  width: min(100%, 420px);
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.4rem;
+  text-align: center;
+}
+
+.service-choice-popup h2 {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 0.45rem;
+}
+
+.service-choice-popup p {
+  color: #888;
+  font-size: 0.92rem;
+  margin-bottom: 1.1rem;
+}
+
+.service-choice-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.service-choice-btn {
+  border: none;
+  border-radius: 10px;
+  background: #1f1f1f;
+  color: #ddd;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.service-choice-btn:hover {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.service-choice-btn-smm {
+  background: #7c3aed;
+  color: #fff;
+}
+
+.service-choice-btn-smm:hover {
+  background: #6d28d9;
 }
 
 /* ===== SECTION COMMON ===== */
