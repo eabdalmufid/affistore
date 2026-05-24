@@ -31,7 +31,6 @@ function ProductModal({ product, onClose, smmData = [] }) {
   const [error, setError]       = useState(null);
 
   const fetchPlans = useCallback(async () => {
-    // For SMM categories, use pre-fetched data
     if (product.type === 'smm_category') {
       setLoading(true);
       try {
@@ -53,7 +52,6 @@ function ProductModal({ product, onClose, smmData = [] }) {
       return;
     }
 
-    // For regular apps, fetch from API
     setLoading(true);
     setError(null);
     try {
@@ -79,12 +77,10 @@ function ProductModal({ product, onClose, smmData = [] }) {
     fetchPlans();
   }, [fetchPlans]);
 
-  // Close on backdrop click
   const handleBackdrop = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
 
-  // Close on Escape key
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handler);
@@ -94,9 +90,7 @@ function ProductModal({ product, onClose, smmData = [] }) {
   return (
     <div className="modal-overlay" onClick={handleBackdrop}>
       <div className="modal-box" role="dialog" aria-modal="true">
-        {/* Drag handle (visible on mobile) */}
         <div className="modal-drag-handle" aria-hidden="true" />
-        {/* Header */}
         <div className="modal-header">
           <div className="modal-product-info">
             {product.type === 'smm_category' ? (
@@ -114,7 +108,6 @@ function ProductModal({ product, onClose, smmData = [] }) {
           <button className="modal-close" onClick={onClose} aria-label="Tutup">✕</button>
         </div>
 
-        {/* Body */}
         <div className="modal-body">
           {loading && (
             <div className="modal-loading">
@@ -151,7 +144,7 @@ function ProductModal({ product, onClose, smmData = [] }) {
                       </div>
                       {(plan.min || plan.max) && (
                         <div className="plan-limits">
-                          Min. Order: {plan.min?.toLocaleString('id-ID')} | Max. Order: {plan.max?.toLocaleString('id-ID')}
+                          Min. {plan.min?.toLocaleString('id-ID')} · Max. {plan.max?.toLocaleString('id-ID')}
                         </div>
                       )}
                     </div>
@@ -179,7 +172,7 @@ function ProductModal({ product, onClose, smmData = [] }) {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          🛒 Order
+                          Order
                         </a>
                       )}
                     </div>
@@ -210,10 +203,10 @@ function FloatingWA() {
       rel="noreferrer"
       aria-label="Chat WhatsApp"
     >
-      <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
       </svg>
-      <span className="floating-wa-label">Chat Sekarang</span>
+      <span className="floating-wa-label">Chat</span>
     </a>
   );
 }
@@ -222,19 +215,19 @@ function FloatingWA() {
 
 /* ── Product image with fallback ── */
 const CATEGORY_COLORS = {
-  Streaming: 'linear-gradient(135deg,#9333ea,#06b6d4)',
-  Creative:  'linear-gradient(135deg,#7c3aed,#2563eb)',
-  AI:        'linear-gradient(135deg,#06b6d4,#0891b2)',
-  Music:     'linear-gradient(135deg,#9333ea,#7c3aed)',
-  Utility:   'linear-gradient(135deg,#1e293b,#0f172a)',
-  SMM:       'linear-gradient(135deg,#9333ea,#06b6d4)',
+  Streaming: '#1a0533',
+  Creative:  '#0d1f3c',
+  AI:        '#001e2b',
+  Music:     '#1a0533',
+  Utility:   '#111111',
+  SMM:       '#1a0533',
 };
 
 function ProductImage({ src, title, category, className }) {
-  if (category === 'SMM') return null; // No image for SMM
+  if (category === 'SMM') return null;
   const [failed, setFailed] = useState(false);
   const initial = title ? title.charAt(0).toUpperCase() : '?';
-  const bg = CATEGORY_COLORS[category] || 'linear-gradient(135deg,#1e1b4b,#1e3a5f)';
+  const bg = CATEGORY_COLORS[category] || '#111111';
 
   if (failed) {
     return (
@@ -271,7 +264,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar" style={scrolled ? { background: 'rgba(6,4,17,0.97)' } : {}}>
+    <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="navbar-logo">
         <img src="/logo.png" alt="Logo" className="navbar-logo-img" />
         <span className="navbar-logo-text">Affistore</span>
@@ -287,9 +280,9 @@ function Navbar() {
           </a>
         </li>
       </ul>
-      <div className={`navbar-hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu">
+      <button className={`navbar-hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(v => !v)} aria-label="Toggle menu">
         <span /><span /><span />
-      </div>
+      </button>
     </nav>
   );
 }
@@ -298,39 +291,34 @@ function Navbar() {
 function Hero() {
   return (
     <section id="hero" className="hero">
-      <div className="hero-bg" />
-      <div className="hero-orb hero-orb-1" />
-      <div className="hero-orb hero-orb-2" />
-      <div className="hero-orb hero-orb-3" />
+      <div className="hero-glow" aria-hidden="true" />
       <div className="hero-content">
-        <div className="hero-text">
-          <div className="section-badge">✨ Solusi Digital Terintegrasi</div>
-          <h1>Upgrade Gaya Hidup Digital Anda</h1>
-          <p>
-            Dapatkan akses premium ke berbagai aplikasi favorit dan tingkatkan 
-            kehadiran media sosial Anda dengan layanan SMM terbaik. Cepat, aman, dan bergaransi.
-          </p>
-          <div className="hero-buttons">
-            <button className="btn-primary" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}>
-              🎯 Explore Layanan
-            </button>
-            <a className="btn-secondary" href={waLink('Halo, saya ingin berkonsultasi tentang layanan digital!')} target="_blank" rel="noreferrer">
-              💬 Konsultasi Gratis
-            </a>
-          </div>
+        <div className="hero-badge">✦ Solusi Digital Terpercaya</div>
+        <h1 className="hero-title">
+          Semua Layanan Premium<br />
+          <span className="hero-accent">dalam Satu Tempat</span>
+        </h1>
+        <p className="hero-desc">
+          Streaming, AI tools, dan SMM services — harga terjangkau,{' '}
+          proses cepat, bergaransi penuh.
+        </p>
+        <div className="hero-actions">
+          <button className="btn-primary" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}>
+            Lihat Layanan
+          </button>
+          <a className="btn-ghost" href={waLink('Halo, saya ingin berkonsultasi tentang layanan digital!')} target="_blank" rel="noreferrer">
+            Chat Kami
+          </a>
         </div>
         <div className="hero-stats">
           {[
-            { icon: '🌟', num: '1.000+', label: 'Total Pesanan' },
-            { icon: '🚀', num: '100+', label: 'Layanan Aktif' },
-            { icon: '🛡️', num: '24/7', label: 'Support System' },
-          ].map(s => (
-            <div key={s.label} className="stat-card">
-              <span className="stat-icon">{s.icon}</span>
-              <div>
-                <div className="stat-number">{s.num}</div>
-                <div className="stat-label">{s.label}</div>
-              </div>
+            { num: '1.000+', label: 'Pesanan' },
+            { num: '100+', label: 'Layanan' },
+            { num: '24/7', label: 'Support' },
+          ].map((s) => (
+            <div key={s.label} className="hero-stat">
+              <span className="hero-stat-num">{s.num}</span>
+              <span className="hero-stat-label">{s.label}</span>
             </div>
           ))}
         </div>
@@ -349,21 +337,19 @@ const FEATURES = [
 
 function Features() {
   return (
-    <section id="about" className="section-full features-bg">
-      <div className="section" style={{ paddingTop: 0, paddingBottom: 0 }}>
-        <div className="section-title">
-          <div className="section-badge">🌟 Keunggulan Kami</div>
+    <section id="about" className="section-features">
+      <div className="container">
+        <div className="section-header">
+          <span className="section-tag">Keunggulan Kami</span>
           <h2>Mengapa Memilih Kami?</h2>
-          <p>Kami berkomitmen memberikan pengalaman belanja terbaik dengan layanan profesional dan terpercaya.</p>
+          <p>Komitmen kami: pengalaman belanja terbaik dengan layanan profesional dan terpercaya.</p>
         </div>
         <div className="features-grid">
           {FEATURES.map(f => (
             <div key={f.title} className="feature-card">
               <span className="feature-icon">{f.icon}</span>
-              <div className="feature-card-text">
-                <h3>{f.title}</h3>
-                <p>{f.desc}</p>
-              </div>
+              <h3>{f.title}</h3>
+              <p>{f.desc}</p>
             </div>
           ))}
         </div>
@@ -398,10 +384,10 @@ function Products({ viewMode, smmData, onSelectProduct }) {
   });
 
   return (
-    <section id="products" className="section-full products-bg">
-      <div className="section" style={{ paddingTop: 0, paddingBottom: 0 }}>
-        <div className="section-title">
-          <div className="section-badge">🏆 Koleksi {viewMode === 'apps' ? 'Aplikasi' : 'SMM'}</div>
+    <section id="products" className="section-products">
+      <div className="container">
+        <div className="section-header">
+          <span className="section-tag">Koleksi {viewMode === 'apps' ? 'Aplikasi' : 'SMM'}</span>
           <h2>{viewMode === 'apps' ? 'Produk Premium Kami' : 'Layanan SMM Terbaik'}</h2>
           <p>
             {viewMode === 'apps' 
@@ -457,7 +443,7 @@ function Products({ viewMode, smmData, onSelectProduct }) {
               ) : (
                 <div className="smm-icon-wrapper">
                  <div className="smm-category-icon">
-                   <img src="/logo.png" alt="SMM" style={{ width: '70px', height: '70px', objectFit: 'contain' }} />
+                   <img src="/logo.png" alt="SMM" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
                  </div>
                 </div>
               )}
@@ -465,7 +451,7 @@ function Products({ viewMode, smmData, onSelectProduct }) {
                 <div className="product-category">{product.category}</div>
                 <div className="product-title">{product.title}</div>
                 <button className="product-order-btn">
-                   Lihat Paket
+                  Lihat Paket
                 </button>
               </div>
             </div>
@@ -503,10 +489,10 @@ const TESTIMONIALS = [
 
 function Testimonials() {
   return (
-    <section id="contact" className="section-full testimonials-bg">
-      <div className="section" style={{ paddingTop: 0, paddingBottom: 0 }}>
-        <div className="section-title">
-          <div className="section-badge">💬 Testimoni</div>
+    <section id="contact" className="section-testimonials">
+      <div className="container">
+        <div className="section-header">
+          <span className="section-tag">Testimoni</span>
           <h2>Kata Pelanggan Kami</h2>
           <p>Ribuan pelanggan telah mempercayakan kebutuhan akun premium mereka kepada kami.</p>
         </div>
@@ -518,7 +504,7 @@ function Testimonials() {
                   <span key={i} className="star-filled">★</span>
                 ))}
               </div>
-              <p className="testimonial-text">{t.text}</p>
+              <p className="testimonial-text">&ldquo;{t.text}&rdquo;</p>
               <div className="testimonial-author">
                 <div className="testimonial-avatar">{t.avatar}</div>
                 <div>
@@ -539,18 +525,19 @@ function Testimonials() {
 function CTABanner() {
   return (
     <div className="cta-banner">
-      <div className="cta-banner-content">
-        <h2>Siap Meningkatkan Performa Digital Anda? 🚀</h2>
-        <p>Hubungi tim kami untuk konsultasi layanan terbaik yang sesuai dengan kebutuhan bisnis atau personal Anda.</p>
-        <a
-          className="btn-primary"
-          href={waLink('Halo, saya ingin tanya produk premium!')}
-          target="_blank"
-          rel="noreferrer"
-          style={{ display: 'inline-flex' }}
-        >
-          💬 Chat WhatsApp Sekarang
-        </a>
+      <div className="container">
+        <div className="cta-banner-content">
+          <h2>Siap Upgrade Digital Kamu? 🚀</h2>
+          <p>Hubungi kami sekarang dan dapatkan layanan terbaik sesuai kebutuhan kamu.</p>
+          <a
+            className="btn-primary"
+            href={waLink('Halo, saya ingin tanya produk premium!')}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Chat WhatsApp Sekarang
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -563,13 +550,13 @@ function Footer() {
 
   return (
     <footer>
-      <div className="footer-grid">
+      <div className="footer-inner">
         <div className="footer-brand">
-          <div className="navbar-logo" style={{ marginBottom: '1.5rem' }}>
+          <div className="footer-logo">
             <img src="/logo.png" alt="Logo" className="navbar-logo-img" />
             <span className="navbar-logo-text">Affistore</span>
           </div>
-          <p>Partner terpercaya untuk solusi digital premium dan pertumbuhan media sosial. Kami menghadirkan kualitas, kecepatan, dan keamanan dalam satu platform.</p>
+          <p>Partner terpercaya untuk solusi digital premium dan pertumbuhan media sosial.</p>
         </div>
         <div className="footer-col">
           <h4>Tautan Cepat</h4>
@@ -583,13 +570,13 @@ function Footer() {
         <div className="footer-col">
           <h4>Hubungi Kami</h4>
           <div className="footer-contact-item">
-            📱 <a href={waLink()} target="_blank" rel="noreferrer">WhatsApp: +62 895-0995-2003</a>
+            <a href={waLink()} target="_blank" rel="noreferrer">📱 WhatsApp: +62 895-0995-2003</a>
           </div>
           <div className="footer-contact-item">
-            ✉️ <a href="mailto:mail@affidev.com">Email: mail@affidev.com</a>
+            <a href="mailto:mail@affidev.com">✉️ mail@affidev.com</a>
           </div>
           <div className="footer-contact-item">
-            🕐 <a href="">Layanan 24/7</a>
+            🕐 Layanan 24/7
           </div>
         </div>
       </div>
@@ -597,17 +584,16 @@ function Footer() {
         <p>© {year} Affistore. Semua hak dilindungi.</p>
         <div className="footer-bottom-links">
           <a href="#">Kebijakan Privasi</a>
-          <a href="#">Syarat & Ketentuan</a>
+          <a href="#">Syarat &amp; Ketentuan</a>
         </div>
       </div>
     </footer>
   );
 }
-
 /* ── App Root ── */
 export default function App() {
   const [showTop, setShowTop] = useState(false);
-  const [viewMode, setViewMode] = useState('apps'); // 'apps' | 'smm'
+  const [viewMode, setViewMode] = useState('apps');
   const [smmData, setSmmData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -637,7 +623,6 @@ export default function App() {
     fetchSmm();
   }, [fetchSmm]);
 
-  // Auto-open modal from URL
   useEffect(() => {
     const product = getProductFromUrl();
     if (product) {
@@ -661,44 +646,36 @@ export default function App() {
       <Navbar />
       <main>
         <Hero />
-        
-        {/* Service Switcher */}
-        <section className="service-selector-section">
-          <div className="service-switcher">
-            <div 
-              className={`switcher-card${viewMode === 'apps' ? ' active' : ''}`}
-              onClick={() => setViewMode('apps')}
-            >
-              <div className="switcher-status">{viewMode === 'apps' ? '✅ Terpilih' : 'Pilih'}</div>
-              <div className="switcher-icon">📱</div>
-              <div>
-                <h3>Akun Premium</h3>
-                <p>Streaming, AI & Aplikasi</p>
-              </div>
-            </div>
-            <div 
-              className={`switcher-card${viewMode === 'smm' ? ' active' : ''}`}
-              onClick={() => setViewMode('smm')}
-              style={{ position: 'relative' }}
-            >
-              <div className="switcher-status">{viewMode === 'smm' ? '✅ Terpilih' : 'Pilih'}</div>
+
+        {/* Service Switcher Tabs */}
+        <div className="service-tabs-section">
+          <div className="container">
+            <div className="service-tabs">
+              <button
+                className={`service-tab${viewMode === 'apps' ? ' active' : ''}`}
+                onClick={() => setViewMode('apps')}
+              >
+                📱 Akun Premium
+              </button>
+              <button
+                className={`service-tab${viewMode === 'smm' ? ' active' : ''}`}
+                onClick={() => setViewMode('smm')}
+              >
+                🚀 Layanan SMM
+              </button>
               {viewMode === 'smm' && (
-                <button 
-                  className="refresh-btn" 
-                  onClick={(e) => { e.stopPropagation(); fetchSmm(); }}
+                <button
+                  className="service-tab-refresh"
+                  onClick={fetchSmm}
                   title="Refresh Data"
+                  aria-label="Refresh data SMM"
                 >
-                  🔄
+                  ↻
                 </button>
               )}
-              <div className="switcher-icon">🚀</div>
-              <div>
-                <h3>Layanan SMM</h3>
-                <p>Followers, Likes & Views</p>
-              </div>
             </div>
           </div>
-        </section>
+        </div>
 
         <Features />
         <Products 
