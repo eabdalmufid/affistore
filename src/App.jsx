@@ -615,13 +615,7 @@ export default function App() {
   const [viewMode, setViewMode] = useState('apps');
   const [smmData, setSmmData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showServiceChoice, setShowServiceChoice] = useState(() => {
-    try {
-      return !window.localStorage.getItem('affistore-service-choice');
-    } catch {
-      return true;
-    }
-  });
+  const [showServiceChoice, setShowServiceChoice] = useState(true);
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 400);
@@ -671,11 +665,6 @@ export default function App() {
     setViewMode(mode);
     if (mode === 'smm') fetchSmm();
     setShowServiceChoice(false);
-    try {
-      window.localStorage.setItem('affistore-service-choice', mode);
-    } catch {
-      // no-op for environments without localStorage access
-    }
     setTimeout(() => {
       document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
