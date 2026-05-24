@@ -95,7 +95,7 @@ function ProductModal({ product, onClose, smmData = [] }) {
           <div className="modal-product-info">
             {product.type === 'smm_category' ? (
               <div className="modal-smm-icon">
-                <img src="/logo.png" alt="SMM" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
+                <img src="/gambar.png" alt="SMM" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
               </div>
             ) : (
               <ProductImage src={product.image} title={product.title} category={product.category} className="modal-product-img" />
@@ -462,7 +462,7 @@ function Products({ viewMode, smmData, onSelectProduct }) {
               ) : (
                 <div className="smm-icon-wrapper">
                  <div className="smm-category-icon">
-                   <img src="/logo.png" alt="SMM" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
+                   <img src="/gambar.png" alt="SMM" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
                  </div>
                 </div>
               )}
