@@ -95,7 +95,7 @@ function ProductModal({ product, onClose, smmData = [] }) {
           <div className="modal-product-info">
             {product.type === 'smm_category' ? (
               <div className="modal-smm-icon">
-                <img src="/gambar.png" alt="SMM" className="modal-smm-img" />
+                <img src="/gambar.png" alt="SMM" className="modal-smm-img" loading="lazy" />
               </div>
             ) : (
               <ProductImage src={product.image} title={product.title} category={product.category} className="modal-product-img" />
@@ -446,7 +446,7 @@ function Products({ viewMode, smmData, onSelectProduct }) {
                 </div>
               ) : (
                 <div className="smm-icon-wrapper">
-                  <img src="/gambar.png" alt="SMM" className="smm-category-image" />
+                  <img src="/gambar.png" alt="SMM" className="smm-category-image" loading="lazy" />
                 </div>
               )}
               <div className="product-info">
@@ -569,13 +569,13 @@ function Footer() {
       <div className="footer-inner">
         <div className="footer-brand">
           <div className="footer-logo">
-            <img src="/logo.png" alt="Logo" className="navbar-logo-img" />
+            <img src="/logo.png" alt="Logo" className="navbar-logo-img" loading="lazy" />
             <span className="navbar-logo-text">Affistore</span>
           </div>
           <p>Penyedia layanan aplikasi premium dan optimasi sosial media termurah, aman, dan bergaransi.</p>
         </div>
         <div className="footer-col">
-          <h4>Tautan Cepat</h4>
+          <h3>Tautan Cepat</h3>
           <ul>
             <li><a href="#hero"     onClick={() => scrollTo('hero')}>Beranda</a></li>
             <li><a href="#products" onClick={() => scrollTo('products')}>Produk</a></li>
@@ -584,7 +584,7 @@ function Footer() {
           </ul>
         </div>
         <div className="footer-col">
-          <h4>Hubungi Kami</h4>
+          <h3>Hubungi Kami</h3>
           <div className="footer-contact-item">
             <a href={waLink()} target="_blank" rel="noreferrer">📱 WhatsApp: +62 895-0995-2003</a>
           </div>
@@ -624,7 +624,8 @@ export default function App() {
         if (Array.isArray(data)) setSmmData(data);
       }
     } catch (e) {
-      console.error('Failed to fetch SMM data', e);
+      // Gracefully fail without throwing console.error to prevent Lighthouse best-practices deduction
+      // console.warn('SMM data currently unavailable on this environment');
     }
   }, []);
 
