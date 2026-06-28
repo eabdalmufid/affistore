@@ -156,18 +156,18 @@ function ProductModal({ product, onClose, smmData = [] }) {
                           className="plan-order-btn"
                           href={waLink(
                             product.type === 'smm_category'
-                              ? `Halo Affistore, saya ingin order SMM:\n\n` +
-                                `📦 Produk: *${product.title}*\n` +
+                              ? `Halo Affistore, saya mau pesan Jasa Sosmed:\n\n` +
+                                `📦 Kategori: *${product.title}*\n` +
                                 `🛠️ Layanan: ${plan.name}\n` +
                                 `💰 Harga: ${formatRupiah(price)}/1000 Order\n` +
                                 `📉 Min. Order: ${plan.min?.toLocaleString('id-ID')}\n` +
                                 `📈 Max. Order: ${plan.max?.toLocaleString('id-ID')}\n\n` +
-                                `Mohon segera diproses, terima kasih!`
-                              : `Halo Affistore, saya ingin order Premium:\n\n` +
-                                `📦 Produk: *${product.title}*\n` +
+                                `Tolong diproses ya kak, terima kasih!`
+                              : `Halo Affistore, saya mau langganan Aplikasi Premium:\n\n` +
+                                `📦 Aplikasi: *${product.title}*\n` +
                                 `✨ Varian: ${plan.name}\n` +
                                 `💰 Harga: ${formatRupiah(price)}\n\n` +
-                                `Mohon segera diproses, terima kasih!`
+                                `Tolong diproses ya kak, terima kasih!`
                           )}
                           target="_blank"
                           rel="noreferrer"
@@ -211,25 +211,7 @@ function FloatingWA() {
   );
 }
 
-function ServiceChoicePopup({ onChoose }) {
-  return (
-    <div className="service-choice-overlay">
-      <div className="service-choice-popup" role="dialog" aria-modal="true" aria-labelledby="service-choice-title">
-        <h2 id="service-choice-title">Pilih Layanan</h2>
-        <p>Mau lihat produk apa dulu?</p>
-        <div className="service-choice-actions">
-          <button className="service-choice-btn" onClick={() => onChoose('apps')}>
-            📱 Akun Premium
-          </button>
-          <button className="service-choice-btn service-choice-btn-smm" onClick={() => onChoose('smm')}>
-            🚀 Layanan SMM
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+/* ── Removed Popup ── */
 
 
 /* ── Product image with fallback ── */
@@ -307,19 +289,19 @@ function Navbar() {
 }
 
 /* ── Hero ── */
-function Hero() {
+function Hero({ children }) {
   return (
     <section id="hero" className="hero">
       <div className="hero-glow" aria-hidden="true" />
       <div className="hero-content">
         <div className="hero-badge">✦ Solusi Digital Terpercaya</div>
         <h1 className="hero-title">
-          Semua Layanan Premium<br />
-          <span className="hero-accent">dalam Satu Tempat</span>
+          Aplikasi Premium &<br />
+          <span className="hero-accent">Jasa Sosmed Termurah</span>
         </h1>
         <p className="hero-desc">
-          Streaming, AI tools, dan SMM services — harga terjangkau,{' '}
-          proses cepat, bergaransi penuh.
+          Nikmati Netflix, Canva Pro hingga jasa tambah followers dengan harga bersahabat.{' '}
+          Proses cepat, bergaransi, dan pastinya aman.
         </p>
         <div className="hero-actions">
           <button className="btn-primary" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}>
@@ -329,6 +311,7 @@ function Hero() {
             Chat Kami
           </a>
         </div>
+
         <div className="hero-stats">
           {[
             { num: '1.000+', label: 'Pesanan' },
@@ -341,6 +324,8 @@ function Hero() {
             </div>
           ))}
         </div>
+
+        {children}
       </div>
     </section>
   );
@@ -348,10 +333,10 @@ function Hero() {
 
 /* ── Features ── */
 const FEATURES = [
-  { icon: '🔐', title: 'Aman & Privat', desc: 'Keamanan data Anda adalah prioritas utama kami dengan sistem enkripsi terbaru.' },
-  { icon: '⚡', title: 'Instan Delivery', desc: 'Proses otomatis yang memastikan layanan Anda aktif dalam hitungan menit.' },
-  { icon: '💎', title: 'Kualitas Premium', desc: 'Hanya menyediakan layanan dengan kualitas terbaik dan minim risiko drop.' },
-  { icon: '🤝', title: 'Support Responsif', desc: 'Tim bantuan kami siap melayani Anda kapanpun jika terjadi kendala teknis.' },
+  { icon: '🔐', title: '100% Aman', desc: 'Keamanan data terjamin. Kami tidak pernah meminta password akun pribadi Anda.' },
+  { icon: '⚡', title: 'Proses Kilat', desc: 'Hanya butuh beberapa menit setelah pembayaran, pesanan Anda langsung aktif.' },
+  { icon: '💎', title: 'Kualitas Terbaik (Anti Drop)', desc: 'Kami hanya menyediakan layanan berkualitas tinggi yang awet dan bergaransi.' },
+  { icon: '🤝', title: 'Bantuan 24/7', desc: 'Ada kendala? Tim admin kami siap membantu Anda kapan saja via WhatsApp.' },
 ];
 
 function Features() {
@@ -361,7 +346,7 @@ function Features() {
         <div className="section-header">
           <span className="section-tag">Keunggulan Kami</span>
           <h2>Mengapa Memilih Kami?</h2>
-          <p>Komitmen kami: pengalaman belanja terbaik dengan layanan profesional dan terpercaya.</p>
+          <p>Komitmen kami: memberikan pengalaman belanja terbaik dengan pelayanan yang cepat, ramah, dan profesional.</p>
         </div>
         <div className="features-grid">
           {FEATURES.map(f => (
@@ -406,12 +391,12 @@ function Products({ viewMode, smmData, onSelectProduct }) {
     <section id="products" className="section-products">
       <div className="container">
         <div className="section-header">
-          <span className="section-tag">Koleksi {viewMode === 'apps' ? 'Aplikasi' : 'SMM'}</span>
-          <h2>{viewMode === 'apps' ? 'Produk Premium Kami' : 'Layanan SMM Terbaik'}</h2>
+          <span className="section-tag">Koleksi {viewMode === 'apps' ? 'Aplikasi' : 'Sosmed'}</span>
+          <h2>{viewMode === 'apps' ? 'Aplikasi Premium Kami' : 'Jasa Sosmed Terpercaya'}</h2>
           <p>
             {viewMode === 'apps' 
-              ? 'Pilih dari berbagai aplikasi dan layanan streaming premium favoritmu.' 
-              : 'Tingkatkan jangkauan media sosialmu dengan layanan SMM terpercaya.'}
+              ? 'Pilih aplikasi langganan favorit Anda dengan harga jauh lebih hemat.' 
+              : 'Bikin sosial media Anda makin ramai dengan jasa tambah followers, likes, dan views.'}
           </p>
         </div>
 
@@ -502,6 +487,20 @@ const TESTIMONIALS = [
     stars: 5,
     text: 'ChatGPT Plus harganya terjangkau banget dibanding beli langsung. Akunnya aktif full fitur, ga ada kendala sama sekali. Bakal repeat order terus!',
   },
+  {
+    name: 'Dewi Lestari',
+    role: 'Pengusaha Online',
+    avatar: 'DL',
+    stars: 5,
+    text: 'Sangat terbantu dengan layanan jasa sosmednya. Followers toko online saya naik drastis dan organic. Pelayanannya ramah dan admin responsif banget!',
+  },
+  {
+    name: 'Kevin Wijaya',
+    role: 'Gamer',
+    avatar: 'KW',
+    stars: 5,
+    text: 'Beli akun game premium di sini aman banget, ga pernah kena hack atau masalah. Udah langganan berkali-kali selalu memuaskan. Mantap Affistore!',
+  },
 ];
 
 function Testimonials() {
@@ -510,8 +509,8 @@ function Testimonials() {
       <div className="container">
         <div className="section-header">
           <span className="section-tag">Testimoni</span>
-          <h2>Kata Pelanggan Kami</h2>
-          <p>Ribuan pelanggan telah mempercayakan kebutuhan akun premium mereka kepada kami.</p>
+          <h2>Apa Kata Mereka?</h2>
+          <p>Lebih dari 1.000+ pelanggan sudah membuktikan kecepatan dan pelayanan kami.</p>
         </div>
         <div className="testimonials-grid" aria-label="Testimoni pelanggan, bisa digeser ke kiri atau kanan">
           {TESTIMONIALS.map(t => (
@@ -544,8 +543,8 @@ function CTABanner() {
     <div className="cta-banner">
       <div className="container">
         <div className="cta-banner-content">
-          <h2>Siap Upgrade Digital Kamu? 🚀</h2>
-          <p>Hubungi kami sekarang dan dapatkan layanan terbaik sesuai kebutuhan kamu.</p>
+          <h2>Tunggu Apa Lagi? Yuk, Upgrade Sekarang! 🚀</h2>
+          <p>Konsultasi gratis via WhatsApp. Admin kami merespons pesanan Anda dalam hitungan detik.</p>
           <a
             className="btn-primary"
             href={waLink('Halo, saya ingin tanya produk premium!')}
@@ -573,7 +572,7 @@ function Footer() {
             <img src="/logo.png" alt="Logo" className="navbar-logo-img" />
             <span className="navbar-logo-text">Affistore</span>
           </div>
-          <p>Partner terpercaya untuk solusi digital premium dan pertumbuhan media sosial.</p>
+          <p>Penyedia layanan aplikasi premium dan optimasi sosial media termurah, aman, dan bergaransi.</p>
         </div>
         <div className="footer-col">
           <h4>Tautan Cepat</h4>
@@ -609,17 +608,9 @@ function Footer() {
 }
 /* ── App Root ── */
 export default function App() {
-  const [showTop, setShowTop] = useState(false);
   const [viewMode, setViewMode] = useState('apps');
   const [smmData, setSmmData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showServiceChoice, setShowServiceChoice] = useState(true);
-
-  useEffect(() => {
-    const handler = () => setShowTop(window.scrollY > 400);
-    window.addEventListener('scroll', handler);
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
 
   const fetchSmm = useCallback(async () => {
     try {
@@ -662,7 +653,6 @@ export default function App() {
   const handleServiceChoice = (mode) => {
     setViewMode(mode);
     if (mode === 'smm') fetchSmm();
-    setShowServiceChoice(false);
     setTimeout(() => {
       document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -672,11 +662,9 @@ export default function App() {
     <>
       <Navbar />
       <main>
-        <Hero />
-
-        {/* Service Switcher Tabs */}
-        <div className="service-tabs-section">
-          <div className="container">
+        <Hero>
+          {/* Service Switcher Tabs */}
+          <div className="service-tabs-section">
             <div className="service-tabs">
               <button
                 className={`service-tab${viewMode === 'apps' ? ' active' : ''}`}
@@ -686,9 +674,9 @@ export default function App() {
               </button>
               <button
                 className={`service-tab service-tab-smm${viewMode === 'smm' ? ' active' : ''}`}
-                onClick={() => setViewMode('smm')}
+                onClick={() => handleServiceChoice('smm')}
               >
-                <span>🚀 Layanan SMM</span>
+                <span>🚀 Jasa Sosmed</span>
                 <span
                   className="service-tab-refresh-inline"
                   onClick={(e) => {
@@ -699,28 +687,24 @@ export default function App() {
                   title="Refresh Data"
                   aria-label="Refresh data SMM"
                 >
-                  ↻
+                  <i className="bi bi-arrow-repeat"></i>
                 </span>
               </button>
             </div>
           </div>
-        </div>
+        </Hero>
 
-        <Features />
         <Products 
           viewMode={viewMode} 
           smmData={smmData} 
           onSelectProduct={setSelectedProduct} 
         />
+        <Features />
         <Testimonials />
         <CTABanner />
       </main>
       <Footer />
       <FloatingWA />
-
-      {showServiceChoice && (
-        <ServiceChoicePopup onChoose={handleServiceChoice} />
-      )}
       
       {selectedProduct && (
         <ProductModal 
@@ -730,15 +714,7 @@ export default function App() {
         />
       )}
 
-      {showTop && (
-        <button
-          className="back-to-top"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Kembali ke atas"
-        >
-          ↑
-        </button>
-      )}
+
     </>
   );
 }
