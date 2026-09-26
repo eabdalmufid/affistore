@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import { products, categories } from './data/products';
 
-const API_URL = 'https://bot.affidev.com/app/plans';
-const SMM_API_URL = 'https://bot.affidev.com/smm/plans';
+const API_URL = 'https://chat.affidev.com/api/store/game-services';
+const SMM_API_URL = 'https://chat.affidev.com/api/store/social-services';
 
 
 function formatRupiah(amount) {
